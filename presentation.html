@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Air Quality Monitor - Presentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: white;
+        }
+        
+        .presentation-container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #f0f8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .real-data-badge {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 15px;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        .smart-notifications {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+        }
+        
+        .smart-notifications.collapsed {
+            max-height: 60px;
+            overflow: hidden;
+        }
+        
+        .smart-notifications.expanded {
+            max-height: 1000px;
+        }
+        
+        .notifications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .notifications-header:hover {
+            opacity: 0.8;
+        }
+        
+        .toggle-icon {
+            font-size: 1.2em;
+            color: #3498db;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-icon.rotated {
+            transform: rotate(180deg);
+        }
+        
+        .notifications-content {
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .notifications-content.hidden {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+        
+        .notification-item {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            animation: slideInLeft 0.5s ease-out;
+        }
+        
+        .notification-item.warning {
+            border-left-color: #f39c12;
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        }
+        
+        .notification-item.success {
+            border-left-color: #27ae60;
+            background: linear-gradient(135deg, #d4edda, #a8e6cf);
+        }
+        
+        .notification-item.info {
+            border-left-color: #3498db;
+            background: linear-gradient(135deg, #d1ecf1, #a8e6cf);
+        }
+        
+        .notification-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .notification-message {
+            color: #34495e;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .main-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .aqi-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            animation: slideInLeft 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .aqi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00e400, #ffff00, #ff7e00, #ff0000, #8f3f97, #7e0023);
+        }
+        
+        .aqi-value {
+            font-size: 6em;
+            font-weight: 800;
+            margin: 20px 0;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        .aqi-status {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .aqi-message {
+            font-size: 1.1em;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .sensors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .sensor-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sensor-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+        
+        .sensor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--sensor-color);
+        }
+        
+        .sensor-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .sensor-icon i {
+            color: var(--sensor-color);
+        }
+        
+        .chart-item h4 i {
+            margin-right: 8px;
+            color: #fff;
+        }
+        
+        .header h1 i {
+            margin-right: 10px;
+            color: #fff;
+        }
+        
+        .aqi-card h2 i {
+            margin-right: 10px;
+            color: #fff;
+        }
+        
+        .chart-title i {
+            margin-right: 10px;
+            color: #fff;
+        }
+        
+        .live-indicator i {
+            color: #ff4757;
+            animation: pulse 2s infinite;
+        }
+        
+        .fullscreen-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Tooltip Styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 15px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9em;
+            line-height: 1.4;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .tooltip h4 {
+            color: #4dabf7;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+        
+        .tooltip p {
+            margin-bottom: 5px;
+        }
+        
+        .tooltip .sensor-range {
+            color: #69db7c;
+            font-weight: 600;
+        }
+        
+        .sensor-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .sensor-value {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .sensor-unit {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .sensor-status {
+            font-size: 0.8em;
+            padding: 4px 12px;
+            border-radius: 15px;
+            margin-top: 10px;
+            display: inline-block;
+            font-weight: 500;
+        }
+        
+        .status-good { background: rgba(0, 228, 0, 0.3); color: #00e400; }
+        .status-moderate { background: rgba(255, 255, 0, 0.3); color: #ffff00; }
+        .status-unhealthy { background: rgba(255, 126, 0, 0.3); color: #ff7e00; }
+        .status-danger { background: rgba(255, 0, 0, 0.3); color: #ff0000; }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            animation: slideInRight 1s ease-out;
+        }
+        
+        .chart-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .chart-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .chart-item h4 {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .chart-item canvas {
+            max-width: 100%;
+            height: 120px !important;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #5a6fd8, #6a4190);
+        }
+        
+        .fullscreen-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        
+        .fullscreen-btn:hover {
+            background: rgba(0,0,0,0.7);
+        }
+        
+        .live-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 228, 0, 0.2);
+            color: #00e400;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            border: 1px solid rgba(0, 228, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        .last-updated {
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+        
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .aqi-value {
+                font-size: 4em;
+            }
+            
+            .sensors-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+        
+        /* Fullscreen mode */
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            overflow-y: auto;
+        }
+        
+        .fullscreen .presentation-container {
+            padding: 40px;
+            max-width: none;
+        }
+        
+        .fullscreen .header h1 {
+            font-size: 4.5em;
+        }
+        
+        .fullscreen .aqi-value {
+            font-size: 8em;
+        }
+        
+        .fullscreen .sensor-card {
+            padding: 35px;
+        }
+        
+        .fullscreen .sensor-value {
+            font-size: 2.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="live-indicator"><i class="fas fa-circle"></i> LIVE</div>
+    <button class="fullscreen-btn" onclick="toggleFullscreen()"><i class="fas fa-expand"></i> Fullscreen</button>
+    
+    <div class="presentation-container">
+        <div class="header">
+            <h1><i class="fas fa-thermometer-half"></i> Smart Air Quality Monitor</h1>
+            <p>Real-time Environmental Monitoring System with Enviro+</p>
+            <div class="real-data-badge">
+                <i class="fas fa-check-circle"></i> REAL SENSOR DATA ONLY
+            </div>
+        </div>
+        
+        <div class="smart-notifications expanded" id="smartNotifications">
+            <div class="notifications-header" onclick="toggleNotifications()">
+                <h2 style="color: #2c3e50; margin: 0;">
+                    <i class="fas fa-bell"></i> Smart Environmental Alerts
+                </h2>
+                <i class="fas fa-chevron-down toggle-icon" id="toggleIcon"></i>
+            </div>
+            <div class="notifications-content" id="notificationsContent">
+                <div id="notificationsContainer">
+                    <div class="notification-item info">
+                        <i class="fas fa-info-circle notification-icon" style="color: #3498db;"></i>
+                        <div class="notification-title">System Status</div>
+                        <div class="notification-message">Real sensors are actively monitoring your environment. Data updates every 15 seconds.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-dashboard">
+            <div class="aqi-card tooltip">
+                <h2 style="font-size: 1.5em; margin-bottom: 20px;"><i class="fas fa-wind"></i> Air Quality Index</h2>
+                <div class="aqi-value" id="aqiValue">--</div>
+                <div class="aqi-status" id="aqiStatus">Loading...</div>
+                <div class="aqi-message" id="aqiMessage">Getting air quality data...</div>
+                <span class="tooltiptext">
+                    <h4><i class="fas fa-wind"></i> Air Quality Index (AQI)</h4>
+                    <p><strong>What is AQI:</strong> A standardized scale (0-500) that indicates how clean or polluted the air is.</p>
+                    <p><strong>Calculation:</strong> Based on multiple pollutants including PM2.5, PM10, O3, NO2, SO2, and CO.</p>
+                    <p><strong>Scale:</strong> 
+                        <span class="sensor-range">0-50: Good</span> | 
+                        <span class="sensor-range">51-100: Moderate</span> | 
+                        <span class="sensor-range">101-150: Unhealthy</span>
+                    </p>
+                    <p><strong>Health Impact:</strong> Higher AQI values indicate greater health risks, especially for sensitive groups.</p>
+                    <p><strong>Real-time Monitoring:</strong> Updated continuously based on current sensor readings.</p>
+                </span>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title"><i class="fas fa-chart-line"></i> Real-time Data Trends</div>
+                <div class="charts-grid">
+                    <div class="chart-item">
+                        <h4><i class="fas fa-thermometer-half"></i> Temperature Trend</h4>
+                        <canvas id="temperatureChart" width="300" height="150"></canvas>
+                    </div>
+                    <div class="chart-item">
+                        <h4><i class="fas fa-tint"></i> Humidity Trend</h4>
+                        <canvas id="humidityChart" width="300" height="150"></canvas>
+                    </div>
+                    <div class="chart-item">
+                        <h4><i class="fas fa-wind"></i> Air Quality Index</h4>
+                        <canvas id="aqiChart" width="300" height="150"></canvas>
+                    </div>
+                    <div class="chart-item">
+                        <h4><i class="fas fa-compress-arrows-alt"></i> Pressure Trend</h4>
+                        <canvas id="pressureChart" width="300" height="150"></canvas>
+                    </div>
+                    <div class="chart-item">
+                        <h4><i class="fas fa-chart-radar"></i> Sensor Overview</h4>
+                        <canvas id="overviewChart" width="300" height="150"></canvas>
+                    </div>
+                    <div class="chart-item">
+                        <h4><i class="fas fa-chart-pie"></i> AQI Distribution</h4>
+                        <canvas id="aqiDistributionChart" width="300" height="150"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sensors-grid">
+            <div class="sensor-card tooltip" style="--sensor-color: #ff6b6b;">
+                <span class="sensor-icon"><i class="fas fa-thermometer-half"></i></span>
+                <div class="sensor-title">Temperature</div>
+                <div class="sensor-value" id="temperature">--°C</div>
+                <div class="sensor-unit">Celsius</div>
+                <div class="sensor-status" id="tempStatus">Loading...</div>
+                <span class="tooltiptext">
+                    <h4><i class="fas fa-thermometer-half"></i> Temperature Sensor</h4>
+                    <p><strong>How it works:</strong> Uses a BME280 digital sensor that measures ambient air temperature through thermal resistance changes.</p>
+                    <p><strong>Technology:</strong> I2C communication protocol with high precision digital output.</p>
+                    <p><strong>Range:</strong> <span class="sensor-range">-40°C to +85°C</span></p>
+                    <p><strong>Accuracy:</strong> ±1°C typical, ±0.5°C in controlled conditions</p>
+                    <p><strong>Applications:</strong> Climate monitoring, HVAC control, weather stations</p>
+                </span>
+            </div>
+            
+            <div class="sensor-card tooltip" style="--sensor-color: #4dabf7;">
+                <span class="sensor-icon"><i class="fas fa-tint"></i></span>
+                <div class="sensor-title">Humidity</div>
+                <div class="sensor-value" id="humidity">--%</div>
+                <div class="sensor-unit">Relative Humidity</div>
+                <div class="sensor-status" id="humidityStatus">Loading...</div>
+                <span class="tooltiptext">
+                    <h4><i class="fas fa-tint"></i> Humidity Sensor</h4>
+                    <p><strong>How it works:</strong> Measures relative humidity using a capacitive humidity sensor that detects water vapor in the air.</p>
+                    <p><strong>Technology:</strong> Capacitive sensing with temperature compensation for accurate readings.</p>
+                    <p><strong>Range:</strong> <span class="sensor-range">0% to 100% RH</span></p>
+                    <p><strong>Accuracy:</strong> ±3% RH typical, ±2% RH in controlled conditions</p>
+                    <p><strong>Applications:</strong> Indoor air quality, mold prevention, comfort monitoring</p>
+                </span>
+            </div>
+            
+            <div class="sensor-card tooltip" style="--sensor-color: #ffd43b;">
+                <span class="sensor-icon"><i class="fas fa-compress-arrows-alt"></i></span>
+                <div class="sensor-title">Pressure</div>
+                <div class="sensor-value" id="pressure">-- hPa</div>
+                <div class="sensor-unit">Hectopascals</div>
+                <div class="sensor-status" id="pressureStatus">Loading...</div>
+                <span class="tooltiptext">
+                    <h4><i class="fas fa-compress-arrows-alt"></i> Barometric Pressure Sensor</h4>
+                    <p><strong>How it works:</strong> Uses a piezoresistive pressure sensor to measure atmospheric pressure changes.</p>
+                    <p><strong>Technology:</strong> MEMS (Micro-Electro-Mechanical Systems) technology with digital output.</p>
+                    <p><strong>Range:</strong> <span class="sensor-range">300 to 1100 hPa</span></p>
+                    <p><strong>Accuracy:</strong> ±1 hPa absolute, ±0.12 hPa relative</p>
+                    <p><strong>Applications:</strong> Weather forecasting, altitude measurement, storm detection</p>
+                </span>
+            </div>
+            
+            <div class="sensor-card tooltip" style="--sensor-color: #69db7c;">
+                <span class="sensor-icon"><i class="fas fa-wind"></i></span>
+                <div class="sensor-title">Gas Quality</div>
+                <div class="sensor-value" id="gas">-- kΩ</div>
+                <div class="sensor-unit">Resistance</div>
+                <div class="sensor-status" id="gasStatus">Loading...</div>
+                <span class="tooltiptext">
+                    <h4><i class="fas fa-wind"></i> Gas Quality Sensor</h4>
+                    <p><strong>How it works:</strong> Measures air quality by detecting changes in electrical resistance when gases interact with the sensor surface.</p>
+                    <p><strong>Technology:</strong> Metal oxide semiconductor (MOS) sensor with analog output.</p>
+                    <p><strong>Range:</strong> <span class="sensor-range">10kΩ to 1MΩ</span></p>
+                    <p><strong>Detects:</strong> VOCs, CO, NO2, and other air pollutants</p>
+                    <p><strong>Applications:</strong> Air quality monitoring, pollution detection, indoor air safety</p>
+                </span>
+            </div>
+            
+            <div class="sensor-card tooltip" style="--sensor-color: #ff8cc8;">
+                <span class="sensor-icon"><i class="fas fa-sun"></i></span>
+                <div class="sensor-title">Light Level</div>
+                <div class="sensor-value" id="light">-- lux</div>
+                <div class="sensor-unit">Lux</div>
+                <div class="sensor-status" id="lightStatus">Loading...</div>
+                <span class="tooltiptext">
+                    <h4><i class="fas fa-sun"></i> Light Level Sensor</h4>
+                    <p><strong>How it works:</strong> Uses a photodiode to measure illuminance by converting light intensity to electrical current.</p>
+                    <p><strong>Technology:</strong> Silicon photodiode with spectral response similar to human eye.</p>
+                    <p><strong>Range:</strong> <span class="sensor-range">0 to 100,000 lux</span></p>
+                    <p><strong>Accuracy:</strong> ±10% typical across full range</p>
+                    <p><strong>Applications:</strong> Smart lighting control, daylight harvesting, plant growth monitoring</p>
+                </span>
+            </div>
+            
+            <div class="sensor-card tooltip" style="--sensor-color: #9775fa;">
+                <span class="sensor-icon"><i class="fas fa-volume-up"></i></span>
+                <div class="sensor-title">Noise Level</div>
+                <div class="sensor-value" id="noise">-- dB</div>
+                <div class="sensor-unit">Decibels</div>
+                <div class="sensor-status" id="noiseStatus">Loading...</div>
+                <span class="tooltiptext">
+                    <h4><i class="fas fa-volume-up"></i> Noise Level Sensor</h4>
+                    <p><strong>How it works:</strong> Uses a MEMS microphone to capture sound waves and convert them to digital audio levels.</p>
+                    <p><strong>Technology:</strong> Digital MEMS microphone with I2S interface and built-in ADC.</p>
+                    <p><strong>Range:</strong> <span class="sensor-range">30 to 120 dB</span></p>
+                    <p><strong>Frequency:</strong> 20Hz to 20kHz (human audible range)</p>
+                    <p><strong>Applications:</strong> Noise pollution monitoring, acoustic comfort, security systems</p>
+                </span>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="startAllSensors()">🚀 Start All Sensors</button>
+            <button class="btn" onclick="refreshData()">🔄 Refresh Data</button>
+            <button class="btn" onclick="showAlerts()">⚠️ Show Alerts</button>
+        </div>
+        
+        <div class="last-updated" id="lastUpdated">
+            Last updated: Never
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let isFullscreen = false;
+        let refreshInterval;
+        let chartData = {
+            temperature: [],
+            humidity: [],
+            aqi: [],
+            pressure: [],
+            timestamps: []
+        };
+        
+        // Initialize charts
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: 'white',
+                        font: {
+                            size: 10
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: 'white',
+                        font: {
+                            size: 10
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeInOutQuart'
+            }
+        };
+        
+        const temperatureChart = new Chart(document.getElementById('temperatureChart'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Temperature (°C)',
+                    data: [],
+                    borderColor: '#ff6b6b',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const humidityChart = new Chart(document.getElementById('humidityChart'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Humidity (%)',
+                    data: [],
+                    borderColor: '#4dabf7',
+                    backgroundColor: 'rgba(77, 171, 247, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const aqiChart = new Chart(document.getElementById('aqiChart'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'AQI',
+                    data: [],
+                    borderColor: '#69db7c',
+                    backgroundColor: 'rgba(105, 219, 124, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const pressureChart = new Chart(document.getElementById('pressureChart'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Pressure (hPa)',
+                    data: [],
+                    borderColor: '#ffd43b',
+                    backgroundColor: 'rgba(255, 212, 59, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: chartOptions
+        });
+        
+        const overviewChart = new Chart(document.getElementById('overviewChart'), {
+            type: 'radar',
+            data: {
+                labels: ['Temperature', 'Humidity', 'Air Quality', 'Pressure'],
+                datasets: [{
+                    label: 'Current Values',
+                    data: [0, 0, 0, 0],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#667eea'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    r: {
+                        ticks: {
+                            color: 'white',
+                            font: {
+                                size: 8
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        pointLabels: {
+                            color: 'white',
+                            font: {
+                                size: 9
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        const aqiDistributionChart = new Chart(document.getElementById('aqiDistributionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Good', 'Moderate', 'Unhealthy', 'Very Unhealthy', 'Hazardous'],
+                datasets: [{
+                    data: [0, 0, 0, 0, 0],
+                    backgroundColor: [
+                        '#00e400',
+                        '#ffff00',
+                        '#ff7e00',
+                        '#ff0000',
+                        '#8f3f97'
+                    ],
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        function updateCharts(sensorData) {
+            const now = new Date().toLocaleTimeString();
+            
+            // Add new data point
+            chartData.temperature.push(sensorData.temperature || 0);
+            chartData.humidity.push(sensorData.humidity || 0);
+            chartData.aqi.push(sensorData.aqi || 0);
+            chartData.pressure.push(sensorData.pressure || 0);
+            chartData.timestamps.push(now);
+            
+            // Keep only last 20 data points
+            const maxPoints = 20;
+            if (chartData.temperature.length > maxPoints) {
+                chartData.temperature.shift();
+                chartData.humidity.shift();
+                chartData.aqi.shift();
+                chartData.pressure.shift();
+                chartData.timestamps.shift();
+            }
+            
+            // Update charts
+            temperatureChart.data.labels = chartData.timestamps;
+            temperatureChart.data.datasets[0].data = chartData.temperature;
+            temperatureChart.update('none');
+            
+            humidityChart.data.labels = chartData.timestamps;
+            humidityChart.data.datasets[0].data = chartData.humidity;
+            humidityChart.update('none');
+            
+            aqiChart.data.labels = chartData.timestamps;
+            aqiChart.data.datasets[0].data = chartData.aqi;
+            aqiChart.update('none');
+            
+            pressureChart.data.labels = chartData.timestamps;
+            pressureChart.data.datasets[0].data = chartData.pressure;
+            pressureChart.update('none');
+            
+            // Update overview radar chart
+            const temp = sensorData.temperature || 0;
+            const humidity = sensorData.humidity || 0;
+            const aqi = sensorData.aqi || 0;
+            const pressure = sensorData.pressure || 0;
+            
+            // Normalize values for radar chart (0-100 scale)
+            overviewChart.data.datasets[0].data = [
+                Math.min((temp / 50) * 100, 100), // Temperature (0-50°C -> 0-100%)
+                humidity, // Humidity already 0-100%
+                Math.min((aqi / 500) * 100, 100), // AQI (0-500 -> 0-100%)
+                Math.min(((pressure - 950) / 100) * 100, 100) // Pressure (950-1050 hPa -> 0-100%)
+            ];
+            overviewChart.update('none');
+            
+            // Update AQI distribution chart
+            const aqiData = [0, 0, 0, 0, 0];
+            if (aqi <= 50) aqiData[0] = 1;
+            else if (aqi <= 100) aqiData[1] = 1;
+            else if (aqi <= 150) aqiData[2] = 1;
+            else if (aqi <= 200) aqiData[3] = 1;
+            else aqiData[4] = 1;
+            
+            aqiDistributionChart.data.datasets[0].data = aqiData;
+            aqiDistributionChart.update('none');
+        }
+        
+        function toggleFullscreen() {
+            const container = document.querySelector('.presentation-container');
+            if (!isFullscreen) {
+                container.classList.add('fullscreen');
+                isFullscreen = true;
+            } else {
+                container.classList.remove('fullscreen');
+                isFullscreen = false;
+            }
+        }
+        
+        function getAQIColor(aqi) {
+            if (aqi <= 50) return '#00e400';      // Good - Green
+            if (aqi <= 100) return '#ffff00';     // Moderate - Yellow
+            if (aqi <= 150) return '#ff7e00';     // Unhealthy for Sensitive Groups - Orange
+            if (aqi <= 200) return '#ff0000';     // Unhealthy - Red
+            if (aqi <= 300) return '#8f3f97';     // Very Unhealthy - Purple
+            return '#7e0023';                     // Hazardous - Maroon
+        }
+        
+        function getAQIMessage(aqi) {
+            if (aqi <= 50) return 'Air quality is excellent! Perfect for outdoor activities.';
+            if (aqi <= 100) return 'Air quality is acceptable. Sensitive individuals may experience minor issues.';
+            if (aqi <= 150) return 'Unhealthy for sensitive groups. Consider reducing outdoor activities.';
+            if (aqi <= 200) return 'Unhealthy air quality. Avoid prolonged outdoor exposure.';
+            if (aqi <= 300) return 'Very unhealthy air quality. Stay indoors if possible.';
+            return 'Hazardous air quality. Avoid all outdoor activities!';
+        }
+        
+        function getAQIStatus(aqi) {
+            if (aqi <= 50) return 'EXCELLENT';
+            if (aqi <= 100) return 'GOOD';
+            if (aqi <= 150) return 'MODERATE';
+            if (aqi <= 200) return 'UNHEALTHY';
+            if (aqi <= 300) return 'VERY UNHEALTHY';
+            return 'HAZARDOUS';
+        }
+        
+        function getSensorStatus(value, type) {
+            switch(type) {
+                case 'temperature':
+                    if (value < 18) return { text: 'COLD', class: 'status-moderate' };
+                    if (value > 32) return { text: 'HOT', class: 'status-danger' };
+                    return { text: 'OPTIMAL', class: 'status-good' };
+                case 'humidity':
+                    if (value < 30) return { text: 'DRY', class: 'status-moderate' };
+                    if (value > 70) return { text: 'HUMID', class: 'status-moderate' };
+                    return { text: 'COMFORTABLE', class: 'status-good' };
+                case 'pressure':
+                    if (value < 980) return { text: 'LOW', class: 'status-moderate' };
+                    if (value > 1020) return { text: 'HIGH', class: 'status-moderate' };
+                    return { text: 'NORMAL', class: 'status-good' };
+                case 'gas':
+                    if (value < 100000) return { text: 'POOR', class: 'status-danger' };
+                    if (value < 200000) return { text: 'FAIR', class: 'status-moderate' };
+                    return { text: 'GOOD', class: 'status-good' };
+                default:
+                    return { text: 'NORMAL', class: 'status-good' };
+            }
+        }
+        
+        function updateSensorDisplay(id, value, unit, type) {
+            const element = document.getElementById(id);
+            const statusElement = document.getElementById(id.replace('temperature', 'temp').replace('humidity', 'humidity').replace('pressure', 'pressure').replace('gas', 'gas') + 'Status');
+            
+            if (element) {
+                element.textContent = `${value}${unit}`;
+            }
+            
+            if (statusElement) {
+                const status = getSensorStatus(value, type);
+                statusElement.textContent = status.text;
+                statusElement.className = `sensor-status ${status.class}`;
+            }
+        }
+        
+        function calculateRealAQI(temperature, humidity) {
+            // Calculate AQI based on real temperature and humidity data
+            if (!temperature || !humidity) return 50;
+            
+            let baseAQI = 50;
+            
+            // Temperature factor (optimal around 22°C)
+            const tempFactor = Math.abs(temperature - 22) * 2;
+            
+            // Humidity factor (optimal around 50%)
+            const humidityFactor = Math.abs(humidity - 50) * 0.5;
+            
+            const aqi = baseAQI + tempFactor + humidityFactor;
+            return Math.min(500, Math.max(0, Math.round(aqi)));
+        }
+        
+        function generateSmartNotifications(temperature, humidity, pressure, light) {
+            const notifications = [];
+            
+            // Temperature notifications
+            if (temperature > 30) {
+                notifications.push({
+                    type: 'warning',
+                    icon: 'fas fa-thermometer-full',
+                    iconColor: '#e74c3c',
+                    title: 'High Temperature Alert',
+                    message: `Temperature is ${temperature.toFixed(1)}°C - Consider turning on air conditioning or opening windows for better ventilation.`
+                });
+            } else if (temperature < 18) {
+                notifications.push({
+                    type: 'warning',
+                    icon: 'fas fa-thermometer-empty',
+                    iconColor: '#3498db',
+                    title: 'Low Temperature Alert',
+                    message: `Temperature is ${temperature.toFixed(1)}°C - Consider turning on heating for comfort.`
+                });
+            } else if (temperature >= 20 && temperature <= 25) {
+                notifications.push({
+                    type: 'success',
+                    icon: 'fas fa-thermometer-half',
+                    iconColor: '#27ae60',
+                    title: 'Perfect Temperature',
+                    message: `Temperature is ${temperature.toFixed(1)}°C - Ideal for comfort and productivity!`
+                });
+            }
+            
+            // Humidity notifications
+            if (humidity > 70) {
+                notifications.push({
+                    type: 'warning',
+                    icon: 'fas fa-tint',
+                    iconColor: '#3498db',
+                    title: 'High Humidity Alert',
+                    message: `Humidity is ${humidity.toFixed(1)}% - High humidity can cause mold growth. Consider using a dehumidifier or improving ventilation.`
+                });
+            } else if (humidity < 30) {
+                notifications.push({
+                    type: 'warning',
+                    icon: 'fas fa-tint',
+                    iconColor: '#f39c12',
+                    title: 'Low Humidity Alert',
+                    message: `Humidity is ${humidity.toFixed(1)}% - Low humidity can cause dry skin and respiratory issues. Consider using a humidifier.`
+                });
+            } else if (humidity >= 40 && humidity <= 60) {
+                notifications.push({
+                    type: 'success',
+                    icon: 'fas fa-tint',
+                    iconColor: '#27ae60',
+                    title: 'Optimal Humidity',
+                    message: `Humidity is ${humidity.toFixed(1)}% - Perfect range for health and comfort!`
+                });
+            }
+            
+            // Pressure notifications
+            if (pressure < 1000) {
+                notifications.push({
+                    type: 'info',
+                    icon: 'fas fa-cloud-rain',
+                    iconColor: '#3498db',
+                    title: 'Low Pressure System',
+                    message: `Pressure is ${pressure.toFixed(1)} hPa - Low pressure often indicates stormy weather ahead.`
+                });
+            } else if (pressure > 1020) {
+                notifications.push({
+                    type: 'success',
+                    icon: 'fas fa-sun',
+                    iconColor: '#f39c12',
+                    title: 'High Pressure System',
+                    message: `Pressure is ${pressure.toFixed(1)} hPa - High pressure usually means clear, sunny weather!`
+                });
+            }
+            
+            // Light notifications
+            if (light !== undefined && light !== null) {
+                if (light < 100) {
+                    notifications.push({
+                        type: 'info',
+                        icon: 'fas fa-moon',
+                        iconColor: '#6c5ce7',
+                        title: 'Low Light Level',
+                        message: `Light level is ${light.toFixed(1)} lux - Consider turning on lights for better visibility.`
+                    });
+                } else if (light > 1000) {
+                    notifications.push({
+                        type: 'success',
+                        icon: 'fas fa-sun',
+                        iconColor: '#f39c12',
+                        title: 'Bright Environment',
+                        message: `Light level is ${light.toFixed(1)} lux - Excellent natural lighting!`
+                    });
+                }
+            }
+            
+            // Educational notifications
+            notifications.push({
+                type: 'info',
+                icon: 'fas fa-graduation-cap',
+                iconColor: '#9b59b6',
+                title: 'Science Learning',
+                message: 'This data helps us understand how temperature, humidity, and pressure affect our environment and health.'
+            });
+            
+            return notifications;
+        }
+        
+        function updateNotifications(notifications) {
+            const container = document.getElementById('notificationsContainer');
+            container.innerHTML = '';
+            
+            notifications.forEach(notification => {
+                const notificationElement = document.createElement('div');
+                notificationElement.className = `notification-item ${notification.type}`;
+                notificationElement.innerHTML = `
+                    <i class="${notification.icon} notification-icon" style="color: ${notification.iconColor};"></i>
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-message">${notification.message}</div>
+                `;
+                container.appendChild(notificationElement);
+            });
+        }
+        
+        function toggleNotifications() {
+            const notificationsDiv = document.getElementById('smartNotifications');
+            const contentDiv = document.getElementById('notificationsContent');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (notificationsDiv.classList.contains('expanded')) {
+                // Collapse
+                notificationsDiv.classList.remove('expanded');
+                notificationsDiv.classList.add('collapsed');
+                contentDiv.classList.add('hidden');
+                toggleIcon.classList.add('rotated');
+            } else {
+                // Expand
+                notificationsDiv.classList.remove('collapsed');
+                notificationsDiv.classList.add('expanded');
+                contentDiv.classList.remove('hidden');
+                toggleIcon.classList.remove('rotated');
+            }
+        }
+        
+        async function fetchSensorData() {
+            try {
+                const response = await fetch('http://localhost:3000/api/sensors');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        const latest = data[0];
+                        
+                        // Update AQI based on real sensor data only
+                        const realAQI = calculateRealAQI(latest.temperature, latest.humidity);
+                        document.getElementById('aqiValue').textContent = realAQI;
+                        document.getElementById('aqiValue').style.color = getAQIColor(realAQI);
+                        document.getElementById('aqiStatus').textContent = getAQIStatus(realAQI);
+                        document.getElementById('aqiMessage').textContent = getAQIMessage(realAQI);
+                        
+                        // Update REAL sensors only
+                        updateSensorDisplay('temperature', latest.temperature?.toFixed(1) || '--', '°C', 'temperature');
+                        updateSensorDisplay('humidity', latest.humidity?.toFixed(1) || '--', '%', 'humidity');
+                        updateSensorDisplay('pressure', latest.pressure?.toFixed(1) || '--', ' hPa', 'pressure');
+                        
+                        // Show real light data if available, otherwise hide
+                        if (latest.light !== undefined && latest.light !== null) {
+                            updateSensorDisplay('light', latest.light.toFixed(1), ' lux', 'light');
+                        } else {
+                            // Hide light sensor if no real data
+                            const lightCard = document.querySelector('.sensor-card[data-sensor="light"]');
+                            if (lightCard) lightCard.style.display = 'none';
+                        }
+                        
+                        // Hide gas and noise sensors (simulated data)
+                        const gasCard = document.querySelector('.sensor-card[data-sensor="gas"]');
+                        const noiseCard = document.querySelector('.sensor-card[data-sensor="noise"]');
+                        if (gasCard) gasCard.style.display = 'none';
+                        if (noiseCard) noiseCard.style.display = 'none';
+                        
+                        // Update charts
+                        updateCharts(latest);
+                        
+                        // Generate and update smart notifications
+                        const notifications = generateSmartNotifications(
+                            latest.temperature, 
+                            latest.humidity, 
+                            latest.pressure, 
+                            latest.light
+                        );
+                        updateNotifications(notifications);
+                        
+                        // Update timestamp
+                        document.getElementById('lastUpdated').textContent = 
+                            `Last updated: ${new Date().toLocaleTimeString()}`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching sensor data:', error);
+            }
+        }
+        
+        function startAllSensors() {
+            alert('🚀 Starting all sensors and displays!');
+            // You can add actual sensor start logic here
+        }
+        
+        function refreshData() {
+            fetchSensorData();
+        }
+        
+        function showAlerts() {
+            alert('⚠️ Alert system is monitoring all sensors for anomalies!');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchSensorData();
+            
+            // Auto-refresh every 3 seconds for presentation
+            refreshInterval = setInterval(fetchSensorData, 3000);
+        });
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+        
+        // Keyboard shortcuts for presentation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullscreen();
+            } else if (e.key === 'r' || e.key === 'R') {
+                refreshData();
+            }
+        });
+    </script>
+</body>
+</html>

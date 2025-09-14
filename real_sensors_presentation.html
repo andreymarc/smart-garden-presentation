@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Garden - Real Sensors Only</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .real-data-badge {
+            background: #27ae60;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .sensors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .sensor-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sensor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .sensor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+        }
+
+        .sensor-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .sensor-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            width: 50px;
+            text-align: center;
+        }
+
+        .sensor-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .sensor-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .sensor-unit {
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-left: 5px;
+        }
+
+        .sensor-status {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #27ae60;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #27ae60;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .last-updated {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .real-sensors-info {
+            background: rgba(39, 174, 96, 0.1);
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .real-sensors-info h3 {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .real-sensors-info p {
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-seedling"></i> Smart Garden Monitor</h1>
+        <p>Real-Time Environmental Monitoring</p>
+        <div class="real-data-badge">
+            <i class="fas fa-check-circle"></i> REAL SENSOR DATA ONLY
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="real-sensors-info">
+            <h3><i class="fas fa-microchip"></i> Real Sensors Active</h3>
+            <p>This dashboard displays only data from physical sensors that are currently reading real environmental conditions. Temperature, humidity, pressure, and light levels are measured directly from the Enviro+ sensor hardware.</p>
+        </div>
+
+        <div class="sensors-grid">
+            <!-- Temperature Card -->
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div class="sensor-icon" style="color: #e74c3c;">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="sensor-title">Temperature</div>
+                </div>
+                <div class="sensor-value" id="temperature">--<span class="sensor-unit">°C</span></div>
+                <div class="sensor-status">
+                    <div class="status-dot"></div>
+                    Real BME280 Sensor
+                </div>
+            </div>
+
+            <!-- Humidity Card -->
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div class="sensor-icon" style="color: #3498db;">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="sensor-title">Humidity</div>
+                </div>
+                <div class="sensor-value" id="humidity">--<span class="sensor-unit">%</span></div>
+                <div class="sensor-status">
+                    <div class="status-dot"></div>
+                    Real BME280 Sensor
+                </div>
+            </div>
+
+            <!-- Pressure Card -->
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div class="sensor-icon" style="color: #9b59b6;">
+                        <i class="fas fa-wind"></i>
+                    </div>
+                    <div class="sensor-title">Pressure</div>
+                </div>
+                <div class="sensor-value" id="pressure">--<span class="sensor-unit">hPa</span></div>
+                <div class="sensor-status">
+                    <div class="status-dot"></div>
+                    Real BME280 Sensor
+                </div>
+            </div>
+
+            <!-- Light Card -->
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <div class="sensor-icon" style="color: #f39c12;">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <div class="sensor-title">Light Level</div>
+                </div>
+                <div class="sensor-value" id="light">--<span class="sensor-unit">lux</span></div>
+                <div class="sensor-status">
+                    <div class="status-dot"></div>
+                    Real Light Sensor
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">Real-Time Environmental Data</div>
+            <canvas id="environmentChart" width="400" height="200"></canvas>
+        </div>
+
+        <div class="last-updated" id="lastUpdated">
+            Last updated: Never
+        </div>
+    </div>
+
+    <script>
+        let environmentChart;
+        let chartData = {
+            labels: [],
+            temperature: [],
+            humidity: [],
+            pressure: [],
+            light: []
+        };
+
+        function initChart() {
+            const ctx = document.getElementById('environmentChart').getContext('2d');
+            environmentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [
+                        {
+                            label: 'Temperature (°C)',
+                            data: chartData.temperature,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            label: 'Humidity (%)',
+                            data: chartData.humidity,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            label: 'Pressure (hPa)',
+                            data: chartData.pressure,
+                            borderColor: '#9b59b6',
+                            backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                            tension: 0.4,
+                            fill: false
+                        },
+                        {
+                            label: 'Light (lux)',
+                            data: chartData.light,
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            tension: 0.4,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSensorData() {
+            fetch('/api/sensors')
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const latest = data[0];
+                        
+                        // Update sensor values
+                        document.getElementById('temperature').innerHTML = latest.temperature.toFixed(1) + '<span class="sensor-unit">°C</span>';
+                        document.getElementById('humidity').innerHTML = latest.humidity.toFixed(1) + '<span class="sensor-unit">%</span>';
+                        document.getElementById('pressure').innerHTML = latest.pressure.toFixed(1) + '<span class="sensor-unit">hPa</span>';
+                        document.getElementById('light').innerHTML = (latest.light || 0).toFixed(1) + '<span class="sensor-unit">lux</span>';
+                        
+                        // Update chart data
+                        const now = new Date().toLocaleTimeString();
+                        chartData.labels.push(now);
+                        chartData.temperature.push(latest.temperature);
+                        chartData.humidity.push(latest.humidity);
+                        chartData.pressure.push(latest.pressure);
+                        chartData.light.push(latest.light || 0);
+                        
+                        // Keep only last 20 data points
+                        if (chartData.labels.length > 20) {
+                            chartData.labels.shift();
+                            chartData.temperature.shift();
+                            chartData.humidity.shift();
+                            chartData.pressure.shift();
+                            chartData.light.shift();
+                        }
+                        
+                        environmentChart.update();
+                        
+                        // Update last updated time
+                        document.getElementById('lastUpdated').textContent = 
+                            `Last updated: ${new Date().toLocaleString()}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching sensor data:', error);
+                });
+        }
+
+        // Initialize chart and start updating
+        initChart();
+        updateSensorData();
+        setInterval(updateSensorData, 5000); // Update every 5 seconds
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,151 @@
+/* App.css */
+
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.main-title {
+  font-size: 2.5em;
+  color: #495057;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.nav-tabs .nav-link {
+  color: #495057;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+}
+
+.nav-tabs .nav-link.active {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.modern-btn {
+  border-radius: 20px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+}
+
+.modern-card {
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.modern-card:hover {
+  transform: scale(1.02);
+}
+
+.section-title {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.notification {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.notification.flood-alert {
+    background-color: #ff4d4d;
+}
+
+.notification.water-needed {
+    background-color: #4caf50;
+}
+
+.notification.extreme-weather-warning {
+    background-color: #ff9f1c;
+}
+
+.App {
+  text-align: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.sensor-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.sensor-card:hover {
+  transform: translateY(-5px);
+}
+
+.sensor-card h2 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+.aqi-card {
+  grid-column: 1 / -1;
+  border-width: 3px;
+  border-style: solid;
+}
+
+.aqi-value {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin: 20px 0;
+  line-height: 1;
+}
+
+.aqi-message {
+  font-size: 1.1rem;
+  margin: 15px 0;
+  color: #555;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .sensor-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .aqi-value {
+    font-size: 2.5rem;
+  }
+  
+  .App-header h1 {
+    font-size: 1.5rem;
+  }
+}
+

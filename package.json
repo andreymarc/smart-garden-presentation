@@ -1,0 +1,33 @@
+{
+  "name": "smart-garden-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@chakra-ui/react": "^3.1.1",
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/material": "^6.1.7",
+    "@nextui-org/react": "^2.4.8",
+    "autoprefixer": "^10.4.20",
+    "aws-iot-device-sdk": "^2.2.15",
+    "aws-iot-device-sdk-v2": "^1.21.3",
+    "axios": "^1.7.7",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "framer-motion": "^11.11.11",
+    "mysql2": "^3.14.0",
+    "node-cron": "^3.0.3",
+    "openai": "^4.96.0",
+    "postcss": "^8.4.48",
+    "sqlite3": "^5.1.7",
+    "tailwindcss": "^3.4.14"
+  }
+}

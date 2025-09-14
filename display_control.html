@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviro+ Display Control</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .display-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+        
+        .display-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .display-title::before {
+            content: "📺";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .lcd-title::before {
+            content: "📱";
+        }
+        
+        .led-title::before {
+            content: "💡";
+        }
+        
+        .status {
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 10px 0;
+            display: inline-block;
+        }
+        
+        .status-running {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-stopped {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .controls {
+            margin-top: 20px;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 5px 10px 5px 0;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .start-btn {
+            background: #28a745;
+        }
+        
+        .start-btn:hover {
+            background: #218838;
+        }
+        
+        .stop-btn {
+            background: #dc3545;
+        }
+        
+        .stop-btn:hover {
+            background: #c82333;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #1565c0;
+        }
+        
+        .current-data {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .temperature {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .refresh-btn {
+            background: #17a2b8;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .refresh-btn:hover {
+            background: #138496;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌡️ Enviro+ Display Control</h1>
+        
+        <div class="current-data">
+            <h3>📊 Current Sensor Data</h3>
+            <div class="temperature" id="currentTemp">Loading...</div>
+            <div id="currentStatus">Getting data...</div>
+        </div>
+        
+        <div class="display-section">
+            <div class="display-title lcd-title">LCD Display</div>
+            <div class="info">
+                Shows temperature, status, and time on the Enviro+ LCD screen
+            </div>
+            <div class="status" id="lcdStatus">Checking status...</div>
+            <div class="controls">
+                <button class="start-btn" onclick="startLCD()" id="lcdStartBtn">Start LCD Display</button>
+                <button class="stop-btn" onclick="stopLCD()" id="lcdStopBtn">Stop LCD Display</button>
+            </div>
+        </div>
+        
+        <div class="display-section">
+            <div class="display-title led-title">LED Control</div>
+            <div class="info">
+                Controls RGB LED based on temperature: Blue (Cold), Green (Normal), Yellow (Warm), Red (Hot)
+            </div>
+            <div class="status" id="ledStatus">Checking status...</div>
+            <div class="controls">
+                <button class="start-btn" onclick="startLED()" id="ledStartBtn">Start LED Control</button>
+                <button class="stop-btn" onclick="stopLED()" id="ledStopBtn">Stop LED Control</button>
+            </div>
+        </div>
+        
+        <button class="refresh-btn" onclick="refreshAll()">🔄 Refresh All</button>
+    </div>
+
+    <script>
+        let refreshInterval;
+        
+        function getTemperatureStatus(temp) {
+            if (temp < 18) return 'COLD (Blue LED)';
+            if (temp <= 28) return 'NORMAL (Green LED)';
+            if (temp <= 32) return 'WARM (Yellow LED)';
+            return 'HOT (Red LED)';
+        }
+        
+        async function fetchCurrentData() {
+            try {
+                const response = await fetch('http://localhost:3000/api/sensors');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        const temp = data[0].temperature;
+                        const status = getTemperatureStatus(temp);
+                        
+                        document.getElementById('currentTemp').textContent = `${temp.toFixed(1)}°C`;
+                        document.getElementById('currentStatus').textContent = status;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('currentTemp').textContent = 'Error';
+                document.getElementById('currentStatus').textContent = 'Could not fetch data';
+            }
+        }
+        
+        async function checkDisplayStatus() {
+            // Check if processes are running
+            try {
+                const response = await fetch('http://localhost:3000/api/sensors');
+                // If we can reach the API, assume the system is running
+                updateStatus('lcdStatus', 'running');
+                updateStatus('ledStatus', 'running');
+            } catch (error) {
+                updateStatus('lcdStatus', 'stopped');
+                updateStatus('ledStatus', 'stopped');
+            }
+        }
+        
+        function updateStatus(elementId, status) {
+            const element = document.getElementById(elementId);
+            element.className = `status status-${status}`;
+            element.textContent = status === 'running' ? '🟢 Running' : '🔴 Stopped';
+        }
+        
+        async function startLCD() {
+            try {
+                const response = await fetch('http://localhost:3000/api/lcd/control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'start' })
+                });
+                
+                if (response.ok) {
+                    updateStatus('lcdStatus', 'running');
+                    alert('LCD Display started!');
+                } else {
+                    alert('Failed to start LCD Display');
+                }
+            } catch (error) {
+                alert('Error starting LCD Display: ' + error.message);
+            }
+        }
+        
+        async function stopLCD() {
+            try {
+                const response = await fetch('http://localhost:3000/api/lcd/control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'stop' })
+                });
+                
+                if (response.ok) {
+                    updateStatus('lcdStatus', 'stopped');
+                    alert('LCD Display stopped!');
+                } else {
+                    alert('Failed to stop LCD Display');
+                }
+            } catch (error) {
+                alert('Error stopping LCD Display: ' + error.message);
+            }
+        }
+        
+        async function startLED() {
+            try {
+                const response = await fetch('http://localhost:3000/api/led/control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'start' })
+                });
+                
+                if (response.ok) {
+                    updateStatus('ledStatus', 'running');
+                    alert('LED Control started!');
+                } else {
+                    alert('Failed to start LED Control');
+                }
+            } catch (error) {
+                alert('Error starting LED Control: ' + error.message);
+            }
+        }
+        
+        async function stopLED() {
+            try {
+                const response = await fetch('http://localhost:3000/api/led/control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'stop' })
+                });
+                
+                if (response.ok) {
+                    updateStatus('ledStatus', 'stopped');
+                    alert('LED Control stopped!');
+                } else {
+                    alert('Failed to stop LED Control');
+                }
+            } catch (error) {
+                alert('Error stopping LED Control: ' + error.message);
+            }
+        }
+        
+        function refreshAll() {
+            fetchCurrentData();
+            checkDisplayStatus();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshAll();
+            
+            // Auto-refresh every 10 seconds
+            refreshInterval = setInterval(refreshAll, 10000);
+        });
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>
+
+

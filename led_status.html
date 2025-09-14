@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviro LED Temperature Status</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .led-display {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 30px auto;
+            border: 8px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .led-cold { background: radial-gradient(circle, #0066ff, #0044cc); }
+        .led-normal { background: radial-gradient(circle, #00ff00, #00cc00); }
+        .led-warm { background: radial-gradient(circle, #ffff00, #cccc00); }
+        .led-hot { background: radial-gradient(circle, #ff0000, #cc0000); }
+        .led-off { background: radial-gradient(circle, #666666, #333333); }
+        
+        .status-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .temperature {
+            font-size: 3em;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+        
+        .status-text {
+            font-size: 1.5em;
+            color: #666;
+            margin: 10px 0;
+        }
+        
+        .thresholds {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .threshold {
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .threshold-cold { background: #0066ff; }
+        .threshold-normal { background: #00ff00; }
+        .threshold-warm { background: #ffff00; color: #333; }
+        .threshold-hot { background: #ff0000; }
+        
+        .controls {
+            margin-top: 30px;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .last-updated {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌡️ Enviro LED Temperature Status</h1>
+        
+        <div class="led-display" id="ledDisplay">
+            <span id="ledText">Loading...</span>
+        </div>
+        
+        <div class="status-info">
+            <div class="temperature" id="temperature">--°C</div>
+            <div class="status-text" id="statusText">Getting temperature...</div>
+        </div>
+        
+        <div class="thresholds">
+            <div class="threshold threshold-cold">Cold<br>&lt; 18°C</div>
+            <div class="threshold threshold-normal">Normal<br>18-28°C</div>
+            <div class="threshold threshold-warm">Warm<br>28-32°C</div>
+            <div class="threshold threshold-hot">Hot<br>&gt; 32°C</div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="startLEDControl()">Start LED Control</button>
+            <button onclick="stopLEDControl()">Stop LED Control</button>
+            <button onclick="refreshData()">Refresh</button>
+        </div>
+        
+        <div class="last-updated" id="lastUpdated">
+            Last updated: Never
+        </div>
+    </div>
+
+    <script>
+        let ledControlActive = false;
+        let refreshInterval;
+        
+        function getTemperatureStatus(temp) {
+            if (temp < 18) return 'cold';
+            if (temp <= 28) return 'normal';
+            if (temp <= 32) return 'warm';
+            return 'hot';
+        }
+        
+        function updateLEDDisplay(temp, status) {
+            const ledDisplay = document.getElementById('ledDisplay');
+            const ledText = document.getElementById('ledText');
+            const temperature = document.getElementById('temperature');
+            const statusText = document.getElementById('statusText');
+            
+            // Remove all status classes
+            ledDisplay.className = 'led-display';
+            
+            // Add appropriate class and content
+            ledDisplay.classList.add(`led-${status}`);
+            ledDisplay.classList.add('pulse');
+            
+            temperature.textContent = `${temp.toFixed(1)}°C`;
+            statusText.textContent = status.toUpperCase();
+            
+            const statusMessages = {
+                'cold': 'Temperature is cold - Blue LED',
+                'normal': 'Temperature is normal - Green LED',
+                'warm': 'Temperature is warm - Yellow LED',
+                'hot': 'Temperature is hot - Red LED'
+            };
+            
+            ledText.textContent = statusMessages[status] || 'Unknown';
+        }
+        
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = 
+                `Last updated: ${now.toLocaleTimeString()}`;
+        }
+        
+        async function fetchTemperatureData() {
+            try {
+                const response = await fetch('http://localhost:3000/api/sensors');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        const temp = data[0].temperature;
+                        const status = getTemperatureStatus(temp);
+                        updateLEDDisplay(temp, status);
+                        updateLastUpdated();
+                        return { temp, status };
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching temperature data:', error);
+            }
+            return null;
+        }
+        
+        function refreshData() {
+            fetchTemperatureData();
+        }
+        
+        function startLEDControl() {
+            if (ledControlActive) return;
+            
+            ledControlActive = true;
+            console.log('Starting LED control...');
+            
+            // Start periodic updates
+            refreshInterval = setInterval(refreshData, 5000);
+            refreshData(); // Initial fetch
+            
+            // You could also start the Python LED control script here
+            // For now, we'll just show the status
+        }
+        
+        function stopLEDControl() {
+            if (!ledControlActive) return;
+            
+            ledControlActive = false;
+            console.log('Stopping LED control...');
+            
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            
+            // Turn off LED display
+            const ledDisplay = document.getElementById('ledDisplay');
+            ledDisplay.className = 'led-display led-off';
+            document.getElementById('ledText').textContent = 'LED Control Stopped';
+            document.getElementById('temperature').textContent = '--°C';
+            document.getElementById('statusText').textContent = 'LED Control Stopped';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
+        });
+    </script>
+</body>
+</html>
+
+
