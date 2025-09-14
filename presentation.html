@@ -246,6 +246,137 @@
             to { transform: translateX(100%); opacity: 0; }
         }
         
+        @keyframes alertSlideIn {
+            from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        @keyframes alertSlideOut {
+            from { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            to { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .alert-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .alert-content {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+        
+        .alert-item.success {
+            background: #d5f4e6;
+            border-left-color: #27ae60;
+        }
+        
+        .alert-item.warning {
+            background: #fef9e7;
+            border-left-color: #f39c12;
+        }
+        
+        .alert-item.danger {
+            background: #fadbd8;
+            border-left-color: #e74c3c;
+        }
+        
+        .alert-item.info {
+            background: #d6eaf8;
+            border-left-color: #3498db;
+        }
+        
+        .alert-item i {
+            font-size: 1.5em;
+            margin-top: 5px;
+        }
+        
+        .alert-item.success i {
+            color: #27ae60;
+        }
+        
+        .alert-item.warning i {
+            color: #f39c12;
+        }
+        
+        .alert-item.danger i {
+            color: #e74c3c;
+        }
+        
+        .alert-item.info i {
+            color: #3498db;
+        }
+        
+        .alert-item h4 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .alert-item p {
+            margin: 0 0 8px 0;
+            color: #34495e;
+            line-height: 1.4;
+        }
+        
+        .alert-item small {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
         .notification-item {
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             border-radius: 10px;
@@ -1512,7 +1643,231 @@
         }
         
         function showAlerts() {
-            alert('⚠️ Alert system is monitoring all sensors for anomalies!');
+            // Get current sensor data
+            fetch('http://localhost:3000/api/sensors')
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const latest = data[0];
+                        showAlertPanel(latest);
+                    } else {
+                        showAlertPanel(null);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching sensor data:', error);
+                    showAlertPanel(null);
+                });
+        }
+        
+        function showAlertPanel(sensorData) {
+            // Create alert panel
+            const alertPanel = document.createElement('div');
+            alertPanel.className = 'alert-panel';
+            alertPanel.innerHTML = `
+                <div class="alert-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Current System Alerts</h3>
+                    <button class="close-btn" onclick="closeAlertPanel()">&times;</button>
+                </div>
+                <div class="alert-content">
+                    ${generateAlertContent(sensorData)}
+                </div>
+            `;
+            
+            // Style the alert panel
+            alertPanel.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                border-radius: 15px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                z-index: 2000;
+                max-width: 600px;
+                width: 90%;
+                max-height: 80vh;
+                overflow-y: auto;
+                animation: alertSlideIn 0.3s ease;
+            `;
+            
+            // Add backdrop
+            const backdrop = document.createElement('div');
+            backdrop.className = 'alert-backdrop';
+            backdrop.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1999;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(backdrop);
+            document.body.appendChild(alertPanel);
+            
+            // Close on backdrop click
+            backdrop.onclick = closeAlertPanel;
+        }
+        
+        function generateAlertContent(sensorData) {
+            if (!sensorData) {
+                return `
+                    <div class="alert-item info">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <h4>No Sensor Data</h4>
+                            <p>Unable to fetch current sensor readings. Please check your connection.</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const alerts = [];
+            const temp = sensorData.temperature || 0;
+            const humidity = sensorData.humidity || 0;
+            const pressure = sensorData.pressure || 0;
+            const aqi = sensorData.aqi || 0;
+            
+            // Temperature alerts
+            if (temp > 25) {
+                alerts.push({
+                    type: 'warning',
+                    icon: 'fas fa-thermometer-full',
+                    title: 'High Temperature Alert',
+                    message: `Temperature is ${temp.toFixed(1)}°C. Consider turning on AC or opening windows.`,
+                    action: 'AC button should be flashing!'
+                });
+            } else if (temp < 18) {
+                alerts.push({
+                    type: 'warning',
+                    icon: 'fas fa-thermometer-empty',
+                    title: 'Low Temperature Alert',
+                    message: `Temperature is ${temp.toFixed(1)}°C. Consider turning on heating.`,
+                    action: 'Heating button should be flashing!'
+                });
+            } else {
+                alerts.push({
+                    type: 'success',
+                    icon: 'fas fa-thermometer-half',
+                    title: 'Temperature Normal',
+                    message: `Temperature is ${temp.toFixed(1)}°C - Perfect for comfort!`,
+                    action: 'No action needed'
+                });
+            }
+            
+            // Humidity alerts
+            if (humidity > 80) {
+                alerts.push({
+                    type: 'warning',
+                    icon: 'fas fa-tint',
+                    title: 'High Humidity Alert',
+                    message: `Humidity is ${humidity.toFixed(1)}%. Consider using dehumidifier or air purifier.`,
+                    action: 'Air Purifier button should be flashing!'
+                });
+            } else if (humidity < 30) {
+                alerts.push({
+                    type: 'info',
+                    icon: 'fas fa-tint',
+                    title: 'Low Humidity Alert',
+                    message: `Humidity is ${humidity.toFixed(1)}%. Consider using humidifier.`,
+                    action: 'Monitor for comfort'
+                });
+            } else {
+                alerts.push({
+                    type: 'success',
+                    icon: 'fas fa-tint',
+                    title: 'Humidity Normal',
+                    message: `Humidity is ${humidity.toFixed(1)}% - Ideal range!`,
+                    action: 'No action needed'
+                });
+            }
+            
+            // Air Quality alerts
+            if (aqi > 100) {
+                alerts.push({
+                    type: 'danger',
+                    icon: 'fas fa-wind',
+                    title: 'Poor Air Quality Alert',
+                    message: `AQI is ${aqi.toFixed(0)}. Air quality is unhealthy.`,
+                    action: 'Air Purifier button should be flashing!'
+                });
+            } else if (aqi > 50) {
+                alerts.push({
+                    type: 'warning',
+                    icon: 'fas fa-wind',
+                    title: 'Moderate Air Quality',
+                    message: `AQI is ${aqi.toFixed(0)}. Air quality is moderate.`,
+                    action: 'Consider air purifier'
+                });
+            } else {
+                alerts.push({
+                    type: 'success',
+                    icon: 'fas fa-wind',
+                    title: 'Good Air Quality',
+                    message: `AQI is ${aqi.toFixed(0)}. Air quality is good!`,
+                    action: 'No action needed'
+                });
+            }
+            
+            // Device status alerts
+            if (deviceStates.ac) {
+                alerts.push({
+                    type: 'info',
+                    icon: 'fas fa-snowflake',
+                    title: 'AC Running',
+                    message: 'Air conditioning is currently active.',
+                    action: 'Cooling in progress'
+                });
+            }
+            
+            if (deviceStates.heating) {
+                alerts.push({
+                    type: 'info',
+                    icon: 'fas fa-fire',
+                    title: 'Heating Running',
+                    message: 'Heating system is currently active.',
+                    action: 'Warming in progress'
+                });
+            }
+            
+            if (deviceStates.purifier) {
+                alerts.push({
+                    type: 'info',
+                    icon: 'fas fa-wind',
+                    title: 'Air Purifier Running',
+                    message: 'Air purifier is currently active.',
+                    action: 'Cleaning air'
+                });
+            }
+            
+            return alerts.map(alert => `
+                <div class="alert-item ${alert.type}">
+                    <i class="${alert.icon}"></i>
+                    <div>
+                        <h4>${alert.title}</h4>
+                        <p>${alert.message}</p>
+                        <small><strong>Action:</strong> ${alert.action}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function closeAlertPanel() {
+            const panel = document.querySelector('.alert-panel');
+            const backdrop = document.querySelector('.alert-backdrop');
+            
+            if (panel) {
+                panel.style.animation = 'alertSlideOut 0.3s ease';
+                setTimeout(() => panel.remove(), 300);
+            }
+            
+            if (backdrop) {
+                backdrop.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => backdrop.remove(), 300);
+            }
         }
         
         // Smart Device Control Variables
