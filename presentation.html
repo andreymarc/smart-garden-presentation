@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Air Quality Monitor - Presentation</title>
+    <title>AeroStream Monitor - Presentation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -20,6 +20,57 @@
             min-height: 100vh;
             overflow-x: hidden;
             color: white;
+            transition: all 0.3s ease;
+        }
+        
+        /* Light Mode */
+        body.light-mode {
+            background: #F3F6FA;
+            color: #2c3e50;
+        }
+        
+        /* Dark Mode */
+        body.dark-mode {
+            background: #0E1A2B;
+            color: #e8f4f8;
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 12px 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        body.light-mode .theme-toggle {
+            background: rgba(44, 62, 80, 0.1);
+            border-color: rgba(44, 62, 80, 0.2);
+            color: #2c3e50;
+        }
+        
+        body.dark-mode .theme-toggle {
+            background: rgba(232, 244, 248, 0.1);
+            border-color: rgba(232, 244, 248, 0.2);
+            color: #e8f4f8;
         }
         
         .presentation-container {
@@ -108,13 +159,17 @@
         
         .notifications-content {
             margin-top: 15px;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
+            opacity: 1;
+            max-height: 1000px;
+            overflow: hidden;
         }
         
         .notifications-content.hidden {
             opacity: 0;
             max-height: 0;
             overflow: hidden;
+            margin-top: 0;
         }
         
         .smart-devices {
@@ -383,7 +438,16 @@
             padding: 15px;
             margin: 10px 0;
             border-left: 4px solid #3498db;
-            animation: slideInLeft 0.5s ease-out;
+            animation: fadeInSmooth 0.5s ease-out;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation-fill-mode: forwards;
+            transform: translateY(10px);
+        }
+        
+        .notification-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .notification-item.warning {
@@ -420,8 +484,13 @@
         }
         
         @keyframes slideInLeft {
-            from { transform: translateX(-100%); opacity: 0; }
+            from { transform: translateX(-20px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeInSmooth {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         @keyframes pulse {
@@ -514,6 +583,22 @@
             right: 0;
             height: 3px;
             background: var(--sensor-color);
+        }
+        
+        /* Light Mode Sensor Cards */
+        body.light-mode .sensor-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(44, 62, 80, 0.1);
+            color: #2c3e50;
+            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.1);
+        }
+        
+        /* Dark Mode Sensor Cards */
+        body.dark-mode .sensor-card {
+            background: rgba(232, 244, 248, 0.05);
+            border: 1px solid rgba(232, 244, 248, 0.1);
+            color: #e8f4f8;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
         .sensor-icon {
@@ -839,15 +924,193 @@
         .fullscreen .sensor-value {
             font-size: 2.5em;
         }
+        
+        /* Light Mode Header */
+        body.light-mode .header h1 {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Dark Mode Header */
+        body.dark-mode .header h1 {
+            background: linear-gradient(45deg, #e8f4f8, #b8d4d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Light Mode Charts */
+        body.light-mode .chart-container {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(44, 62, 80, 0.1);
+            color: #2c3e50;
+        }
+        
+        /* Dark Mode Charts */
+        body.dark-mode .chart-container {
+            background: rgba(232, 244, 248, 0.05);
+            border: 1px solid rgba(232, 244, 248, 0.1);
+            color: #e8f4f8;
+        }
+        
+        /* Light Mode Notifications */
+        body.light-mode .notification {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(44, 62, 80, 0.1);
+            color: #2c3e50;
+        }
+        
+        /* Dark Mode Notifications */
+        body.dark-mode .notification {
+            background: rgba(232, 244, 248, 0.08);
+            border: 1px solid rgba(232, 244, 248, 0.15);
+            color: #e8f4f8;
+        }
+        
+        /* Light Mode AQI Card */
+        body.light-mode .aqi-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(44, 62, 80, 0.1);
+            color: #2c3e50;
+        }
+        
+        /* Dark Mode AQI Card */
+        body.dark-mode .aqi-card {
+            background: rgba(232, 244, 248, 0.05);
+            border: 1px solid rgba(232, 244, 248, 0.1);
+            color: #e8f4f8;
+        }
+        
+        /* Device Alert Close Button */
+        .close-alert-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            margin-left: auto;
+        }
+        
+        .close-alert-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .close-alert-btn i {
+            font-size: 12px;
+        }
+        
+        /* Chart Modal */
+        .chart-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .chart-modal.active {
+            display: flex;
+        }
+        
+        .chart-modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            color: #2c3e50;
+        }
+        
+        body.light-mode .chart-modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            color: #2c3e50;
+        }
+        
+        body.dark-mode .chart-modal-content {
+            background: rgba(30, 30, 30, 0.95);
+            color: #e8f4f8;
+        }
+        
+        .chart-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .chart-modal-title {
+            font-size: 2em;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .chart-modal-close {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+        
+        .chart-modal-close:hover {
+            color: #e74c3c;
+        }
+        
+        body.dark-mode .chart-modal-close {
+            color: #ccc;
+        }
+        
+        body.dark-mode .chart-modal-close:hover {
+            color: #ff6b6b;
+        }
+        
+        .chart-modal-canvas {
+            width: 80vw !important;
+            height: 60vh !important;
+            max-width: 1200px;
+            max-height: 600px;
+        }
+        
+        .chart-item {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .chart-item:hover {
+            transform: scale(1.02);
+        }
     </style>
 </head>
 <body>
     <div class="live-indicator"><i class="fas fa-circle"></i> LIVE</div>
     <button class="fullscreen-btn" onclick="toggleFullscreen()"><i class="fas fa-expand"></i> Fullscreen</button>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-sun" id="theme-icon"></i>
+        <span id="theme-text">Light Mode</span>
+    </button>
     
     <div class="presentation-container">
         <div class="header">
-            <h1><i class="fas fa-thermometer-half"></i> Smart Air Quality Monitor</h1>
+            <h1><i class="fas fa-thermometer-half"></i> AeroStream Monitor</h1>
             <p>Real-time Environmental Monitoring System with Enviro+</p>
             <div class="real-data-badge">
                 <i class="fas fa-check-circle"></i> REAL SENSOR DATA ONLY
@@ -1084,10 +1347,24 @@
         </div>
     </div>
 
+    <!-- Chart Modal -->
+    <div class="chart-modal" id="chartModal">
+        <div class="chart-modal-content">
+            <div class="chart-modal-header">
+                <h2 class="chart-modal-title" id="modalChartTitle">Chart Details</h2>
+                <button class="chart-modal-close" onclick="closeChartModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <canvas id="modalChart" class="chart-modal-canvas"></canvas>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         let isFullscreen = false;
         let refreshInterval;
+        let lastNotificationUpdate = 0;
         let chartData = {
             temperature: [],
             humidity: [],
@@ -1108,24 +1385,24 @@
             scales: {
                 x: {
                     ticks: {
-                        color: 'white',
+                        color: '#2c3e50',
                         font: {
                             size: 10
                         }
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: 'rgba(44, 62, 80, 0.1)'
                     }
                 },
                 y: {
                     ticks: {
-                        color: 'white',
+                        color: '#2c3e50',
                         font: {
                             size: 10
                         }
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: 'rgba(44, 62, 80, 0.1)'
                     }
                 }
             },
@@ -1347,6 +1624,88 @@
             }
         }
         
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (body.classList.contains('light-mode')) {
+                // Switch to dark mode
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'dark');
+            } else if (body.classList.contains('dark-mode')) {
+                // Switch to default mode
+                body.classList.remove('dark-mode');
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Default';
+                localStorage.setItem('theme', 'default');
+            } else {
+                // Switch to light mode
+                body.classList.add('light-mode');
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'light');
+            }
+            
+            // Update chart colors based on theme
+            updateChartColors();
+        }
+        
+        function updateChartColors() {
+            const body = document.body;
+            let textColor, gridColor;
+            
+            if (body.classList.contains('light-mode')) {
+                textColor = '#2c3e50';
+                gridColor = 'rgba(44, 62, 80, 0.1)';
+            } else if (body.classList.contains('dark-mode')) {
+                textColor = '#e8f4f8';
+                gridColor = 'rgba(232, 244, 248, 0.1)';
+            } else {
+                textColor = '#2c3e50';
+                gridColor = 'rgba(44, 62, 80, 0.1)';
+            }
+            
+            // Update all chart scales
+            const charts = [temperatureChart, humidityChart, pressureChart, aqiChart];
+            charts.forEach(chart => {
+                if (chart && chart.options && chart.options.scales) {
+                    chart.options.scales.x.ticks.color = textColor;
+                    chart.options.scales.x.grid.color = gridColor;
+                    chart.options.scales.y.ticks.color = textColor;
+                    chart.options.scales.y.grid.color = gridColor;
+                    chart.update();
+                }
+            });
+        }
+        
+        // Load saved theme on page load
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (savedTheme === 'light') {
+                body.classList.add('light-mode');
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Light Mode';
+            } else if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Dark Mode';
+            } else {
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Default';
+            }
+            
+            // Update chart colors after theme is loaded
+            setTimeout(updateChartColors, 100);
+        }
+        
         function getAQIColor(aqi) {
             if (aqi <= 50) return '#00e400';      // Good - Green
             if (aqi <= 100) return '#ffff00';     // Moderate - Yellow
@@ -1525,31 +1884,75 @@
                 }
             }
             
-            // Educational notifications
-            notifications.push({
-                type: 'info',
-                icon: 'fas fa-graduation-cap',
-                iconColor: '#9b59b6',
-                title: 'Science Learning',
-                message: 'This data helps us understand how temperature, humidity, and pressure affect our environment and health.'
-            });
             
             return notifications;
         }
         
         function updateNotifications(notifications) {
             const container = document.getElementById('notificationsContainer');
-            container.innerHTML = '';
             
-            notifications.forEach(notification => {
-                const notificationElement = document.createElement('div');
-                notificationElement.className = `notification-item ${notification.type}`;
-                notificationElement.innerHTML = `
-                    <i class="${notification.icon} notification-icon" style="color: ${notification.iconColor};"></i>
-                    <div class="notification-title">${notification.title}</div>
-                    <div class="notification-message">${notification.message}</div>
-                `;
-                container.appendChild(notificationElement);
+            // If no notifications, clear container smoothly
+            if (!notifications || notifications.length === 0) {
+                const items = container.querySelectorAll('.notification-item');
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.opacity = '0';
+                        item.style.transform = 'translateY(-10px)';
+                        setTimeout(() => {
+                            if (item.parentNode) {
+                                item.parentNode.removeChild(item);
+                            }
+                        }, 300);
+                    }, index * 100);
+                });
+                return;
+            }
+            
+            // Get existing notifications
+            const existingItems = container.querySelectorAll('.notification-item');
+            const existingKeys = Array.from(existingItems).map(item => 
+                item.dataset.key || item.querySelector('.notification-title').textContent
+            );
+            
+            // Create new notification keys
+            const newKeys = notifications.map(notification => notification.title);
+            
+            // Remove notifications that are no longer needed
+            existingItems.forEach((item, index) => {
+                const key = item.dataset.key || item.querySelector('.notification-title').textContent;
+                if (!newKeys.includes(key)) {
+                    setTimeout(() => {
+                        item.style.opacity = '0';
+                        item.style.transform = 'translateY(-10px)';
+                        setTimeout(() => {
+                            if (item.parentNode) {
+                                item.parentNode.removeChild(item);
+                            }
+                        }, 300);
+                    }, index * 50);
+                }
+            });
+            
+            // Add new notifications
+            notifications.forEach((notification, index) => {
+                const key = notification.title;
+                const existingItem = Array.from(existingItems).find(item => 
+                    (item.dataset.key || item.querySelector('.notification-title').textContent) === key
+                );
+                
+                if (!existingItem) {
+                    setTimeout(() => {
+                        const notificationElement = document.createElement('div');
+                        notificationElement.className = `notification-item ${notification.type}`;
+                        notificationElement.dataset.key = key;
+                        notificationElement.innerHTML = `
+                            <i class="${notification.icon} notification-icon" style="color: ${notification.iconColor};"></i>
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-message">${notification.message}</div>
+                        `;
+                        container.appendChild(notificationElement);
+                    }, index * 100);
+                }
             });
         }
         
@@ -1611,14 +2014,18 @@
                         // Update charts
                         updateCharts(latest);
                         
-                        // Generate and update smart notifications
-                        const notifications = generateSmartNotifications(
-                            latest.temperature, 
-                            latest.humidity, 
-                            latest.pressure, 
-                            latest.light
-                        );
-                        updateNotifications(notifications);
+                        // Generate and update smart notifications (debounced)
+                        const now = Date.now();
+                        if (now - lastNotificationUpdate > 2000) { // Update notifications max every 2 seconds
+                            const notifications = generateSmartNotifications(
+                                latest.temperature, 
+                                latest.humidity, 
+                                latest.pressure, 
+                                latest.light
+                            );
+                            updateNotifications(notifications);
+                            lastNotificationUpdate = now;
+                        }
                         
                         // Check smart device recommendations
                         checkSmartDeviceRecommendations(latest);
@@ -1966,43 +2373,204 @@
             btn.classList.remove('flashing');
         }
         
+        function closeDeviceAlert(device) {
+            const alert = document.querySelector(`.device-alert[data-device="${device}"]`);
+            if (alert) {
+                alert.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.parentNode.removeChild(alert);
+                        // Reposition remaining alerts
+                        repositionAlerts();
+                    }
+                }, 300);
+            }
+        }
+        
+        function repositionAlerts() {
+            const alerts = document.querySelectorAll('.device-alert');
+            alerts.forEach((alert, index) => {
+                alert.style.marginTop = `${10 + (index * 60)}px`;
+            });
+        }
+        
+        function openChartModal(chartType, chartTitle) {
+            const modal = document.getElementById('chartModal');
+            const title = document.getElementById('modalChartTitle');
+            const canvas = document.getElementById('modalChart');
+            
+            title.textContent = chartTitle;
+            modal.classList.add('active');
+            
+            // Create a new chart instance for the modal
+            const ctx = canvas.getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.modalChartInstance) {
+                window.modalChartInstance.destroy();
+            }
+            
+            // Get the original chart data
+            const originalChart = getOriginalChart(chartType);
+            if (!originalChart) return;
+            
+            // Create modal chart with same data but larger
+            window.modalChartInstance = new Chart(ctx, {
+                type: originalChart.config.type,
+                data: originalChart.data,
+                options: {
+                    ...originalChart.options,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        ...originalChart.options.plugins,
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        ...originalChart.options.scales,
+                        x: {
+                            ...originalChart.options.scales.x,
+                            ticks: {
+                                ...originalChart.options.scales.x.ticks,
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        y: {
+                            ...originalChart.options.scales.y,
+                            ticks: {
+                                ...originalChart.options.scales.y.ticks,
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function closeChartModal() {
+            const modal = document.getElementById('chartModal');
+            modal.classList.remove('active');
+            
+            if (window.modalChartInstance) {
+                window.modalChartInstance.destroy();
+                window.modalChartInstance = null;
+            }
+        }
+        
+        function getOriginalChart(chartType) {
+            switch(chartType) {
+                case 'temperature':
+                    return temperatureChart;
+                case 'humidity':
+                    return humidityChart;
+                case 'pressure':
+                    return pressureChart;
+                case 'aqi':
+                    return aqiChart;
+                default:
+                    return null;
+            }
+        }
+        
         function showDeviceAlert(device, message) {
+            // Remove any existing device alerts for this device
+            const existingAlert = document.querySelector(`.device-alert[data-device="${device}"]`);
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            // Get the AQI card to position the alert below it
+            const aqiCard = document.querySelector('.aqi-card');
+            if (!aqiCard) return;
+            
+            // Count existing alerts to position new one correctly
+            const existingAlerts = document.querySelectorAll('.device-alert');
+            const alertOffset = existingAlerts.length * 60; // 60px spacing between alerts
+            
             // Create a temporary notification
             const notification = document.createElement('div');
             notification.className = 'device-alert';
+            notification.dataset.device = device;
             notification.innerHTML = `
                 <i class="fas fa-exclamation-triangle"></i>
                 <span>${message}</span>
+                <button class="close-alert-btn" onclick="closeDeviceAlert('${device}')">
+                    <i class="fas fa-times"></i>
+                </button>
             `;
             notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                margin-top: ${10 + alertOffset}px;
                 background: #e74c3c;
                 color: white;
-                padding: 15px 20px;
+                padding: 12px 15px;
                 border-radius: 8px;
                 box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-                z-index: 1000;
+                z-index: 999;
                 animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 13px;
+                font-weight: 500;
+                border: 2px solid rgba(255, 255, 255, 0.2);
             `;
             
-            document.body.appendChild(notification);
+            // Make the AQI card position relative so the alert can be positioned relative to it
+            aqiCard.style.position = 'relative';
+            aqiCard.appendChild(notification);
             
-            // Remove after 3 seconds
+            // Remove after 10 seconds (longer since users can close manually)
             setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, 10000);
         }
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
             fetchSensorData();
+            
+            // Add click listeners to chart items
+            document.getElementById('temperatureChart').parentElement.addEventListener('click', () => {
+                openChartModal('temperature', 'Temperature Trend - Detailed View');
+            });
+            
+            document.getElementById('humidityChart').parentElement.addEventListener('click', () => {
+                openChartModal('humidity', 'Humidity Trend - Detailed View');
+            });
+            
+            document.getElementById('pressureChart').parentElement.addEventListener('click', () => {
+                openChartModal('pressure', 'Pressure Trend - Detailed View');
+            });
+            
+            document.getElementById('aqiChart').parentElement.addEventListener('click', () => {
+                openChartModal('aqi', 'Air Quality Index - Detailed View');
+            });
+            
+            // Close modal when clicking outside
+            document.getElementById('chartModal').addEventListener('click', (e) => {
+                if (e.target.id === 'chartModal') {
+                    closeChartModal();
+                }
+            });
             
             // Auto-refresh every 3 seconds for presentation
             refreshInterval = setInterval(fetchSensorData, 3000);

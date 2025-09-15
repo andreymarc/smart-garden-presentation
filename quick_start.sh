@@ -3,7 +3,7 @@
 # Ultra Quick Start - One Command Launch
 # For presentation day - just run this!
 
-echo "⚡ ULTRA QUICK START - Smart Garden Presentation"
+echo "⚡ ULTRA QUICK START - AeroStream Presentation"
 echo "==============================================="
 
 cd /home/pi/smart-garden-backend-master
@@ -16,7 +16,7 @@ sleep 1
 # Start everything
 echo "🚀 Launching system..."
 node server.js &
-python3 real_sensors_only.py &
+python3 simple_accurate_sensor.py &
 
 sleep 5
 

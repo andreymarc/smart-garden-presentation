@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Smart Garden Quick Start Application for Mac
+# This creates a proper Mac application that can be double-clicked
+
+# Configuration - UPDATE THESE VALUES
+PI_IP="192.168.1.100"  # Replace with your Pi's IP address
+PI_USER="pi"           # Replace with your Pi username if different
+
+# Colors for better output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}🌱 Smart Garden Presentation System${NC}"
+echo -e "${BLUE}====================================${NC}"
+echo ""
+
+# Check if Pi is reachable
+echo -e "${YELLOW}📡 Checking connection to Raspberry Pi...${NC}"
+if ping -c 1 $PI_IP > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ Raspberry Pi is reachable at $PI_IP${NC}"
+else
+    echo -e "${RED}❌ Cannot reach Raspberry Pi at $PI_IP${NC}"
+    echo -e "${YELLOW}Please check:${NC}"
+    echo "  1. Pi is powered on and connected to network"
+    echo "  2. IP address is correct: $PI_IP"
+    echo "  3. Both devices are on the same network"
+    echo ""
+    read -p "Press Enter to continue anyway or Ctrl+C to exit..."
+fi
+
+echo ""
+echo -e "${YELLOW}🚀 Starting Smart Garden system...${NC}"
+
+# Open Terminal and start the system
+osascript <<EOF
+tell application "Terminal"
+    activate
+    set newTab to do script "echo '🌱 Smart Garden Presentation System Starting...'"
+    delay 1
+    do script "echo '📡 Connecting to Raspberry Pi at $PI_IP...'" in newTab
+    delay 1
+    do script "ssh $PI_USER@$PI_IP 'cd /home/pi/smart-garden-backend-master && ./quick_start.sh'" in newTab
+end tell
+EOF
+
+echo ""
+echo -e "${GREEN}✅ Smart Garden system is starting!${NC}"
+echo -e "${BLUE}🌐 Open your browser and go to:${NC}"
+echo -e "${GREEN}   http://$PI_IP:3000/presentation${NC}"
+echo ""
+echo -e "${YELLOW}📱 You can also access it from any device on your network:${NC}"
+echo -e "${GREEN}   http://$PI_IP:3000/presentation${NC}"
+echo ""
+echo -e "${BLUE}🎯 Perfect for your school presentation!${NC}"
+echo ""
+read -p "Press Enter to close this window..."
+
